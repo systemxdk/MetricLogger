@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTU.MetricLogger.Seeder", "DTU.MetricLogger.Seeder\DTU.MetricLogger.Seeder.csproj", "{6B74A245-9787-4084-9692-1BD2F9DE1376}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTU.MetricLogger.DAL", "DTU.MetricLogger.DAL\DTU.MetricLogger.DAL.csproj", "{96D33837-40C6-46B6-A534-8707F19151EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTU.MetricLogger.API", "DTU.MetricLogger.API\DTU.MetricLogger.API.csproj", "{519B17E9-D40A-4A9E-906F-B042891CFA50}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTU.MetricLogger.FrontEnd", "DTU.MetricLogger.FrontEnd\DTU.MetricLogger.FrontEnd.csproj", "{9D1A81D5-7FF2-4E27-9FA2-79AC3CB7E0F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTU.MetricLogger.Core", "DTU.MetricLogger.Core\DTU.MetricLogger.Core.csproj", "{5F281C25-22D0-40BB-89E9-28D545000100}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6B74A245-9787-4084-9692-1BD2F9DE1376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B74A245-9787-4084-9692-1BD2F9DE1376}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B74A245-9787-4084-9692-1BD2F9DE1376}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B74A245-9787-4084-9692-1BD2F9DE1376}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96D33837-40C6-46B6-A534-8707F19151EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96D33837-40C6-46B6-A534-8707F19151EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96D33837-40C6-46B6-A534-8707F19151EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96D33837-40C6-46B6-A534-8707F19151EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{519B17E9-D40A-4A9E-906F-B042891CFA50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{519B17E9-D40A-4A9E-906F-B042891CFA50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{519B17E9-D40A-4A9E-906F-B042891CFA50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{519B17E9-D40A-4A9E-906F-B042891CFA50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1A81D5-7FF2-4E27-9FA2-79AC3CB7E0F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1A81D5-7FF2-4E27-9FA2-79AC3CB7E0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1A81D5-7FF2-4E27-9FA2-79AC3CB7E0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1A81D5-7FF2-4E27-9FA2-79AC3CB7E0F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F281C25-22D0-40BB-89E9-28D545000100}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F281C25-22D0-40BB-89E9-28D545000100}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F281C25-22D0-40BB-89E9-28D545000100}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F281C25-22D0-40BB-89E9-28D545000100}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E8BD93C-0C18-4C12-A2FF-883B42C9A439}
+	EndGlobalSection
+EndGlobal

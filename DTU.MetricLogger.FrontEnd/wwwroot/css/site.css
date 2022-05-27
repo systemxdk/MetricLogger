@@ -1,0 +1,38 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+th {
+    padding: 5px;
+    text-align: left;
+}
+
+td {
+    width: auto;
+    padding: 5px;
+    text-align: left;
+}
+
+td.min {
+    width: 1%;
+    white-space: nowrap;
+}
+
+#containerTemperature, #containerHumidity, #containerRadon {
+    display: none;
+}

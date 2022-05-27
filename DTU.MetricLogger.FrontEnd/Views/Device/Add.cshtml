@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Tilføj enhed";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Tilføjer ny måleenhed</h1>
+    
+    <br /><hr /><br />
+
+    <form method="post" asp-controller="Device" asp-action="Save" >
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td>Leverandør</td>
+                    <td>
+                        <select class="form-select" id="device-vendor-fetch" name="vendor">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Model</td>
+                    <td>
+                        <select class="form-select" id="device-model-fetch" name="device">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Værelse</td>
+                    <td>
+                        <select class="form-select" id="device-room-fetch" name="room">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Aktiv</td>
+                    <td><input type="checkbox" name="active" /></td>
+                </tr>
+            </tbody>
+        </table>
+        <input id="device-submit" type="submit" value="Klik her for at oprette" disabled="disabled" />
+
+    </form>
+</div>

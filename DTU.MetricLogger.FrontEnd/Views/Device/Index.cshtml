@@ -1,0 +1,273 @@
+﻿@using System.Text
+@model DeviceViewModel
+@{
+    ViewData["Title"] = "Mine enheder";
+
+    var tr_attr = "";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Mine enheder</h1>
+    
+    @if (Model.Devices != null)
+    {
+        <input type="hidden" id="devices-count" name="devices" value="@Model.Devices.Count()" />
+    } else
+    {
+        <input type="hidden" id="devices-count" name="devices" value="0" />
+    }
+
+    @if (Model != null && Model.HasDevices)
+    {
+        var activeDevices = 0;
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Enhed</th>
+                    <th>Værelse</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Devices != null)
+                {
+                    @foreach (var device in Model.Devices)
+                    {
+                        @if (device.Active)
+                        {
+                            activeDevices++;
+                        } 
+
+                        @if (Model.HighlightDeviceId != null && Model.HighlightDeviceId.Equals(device.Id))
+                        {
+                            tr_attr = "background-color: lightgreen";
+                        } else
+                        {
+                            tr_attr = string.Empty;
+                        }
+                        <tr style="@tr_attr">
+                            <td class="min">
+                                @Html.DisplayFor(modelItem => device.Name)
+                            </td>
+                            <td>
+                                @if (device.Room != null)
+                                {
+                                    @Html.DisplayFor(modelItem => device.Room.Name)
+                                }
+                            </td>
+                            <td class="min">
+                                @if (device.Active)
+                                {
+                                    <form method="post" asp-controller="Device" asp-action="Deactivate" asp-route-id="@device.Id">
+                                        <input type="submit" class="btn btn-warning" value="Deaktiver" />
+                                    </form>
+                                } else
+                                {
+                                    <form method="post" asp-controller="Device" asp-action="Activate" asp-route-id="@device.Id">
+                                        <input type="submit" class="btn btn-success" value="Aktiver" />
+                                    </form>
+                                }
+                            </td>
+                            <td class="min">
+                                <form method="post" asp-controller="Device" asp-action="Delete" asp-route-id="@device.Id">
+                                    <input type="submit" class="btn btn-danger" value="Fjern enhed" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    
+                }
+            </tbody>
+        </table>
+        
+        <input type="hidden" id="devices-active-count" name="devices-active" value="@activeDevices" />
+        <br />
+
+        <hr />
+
+        if (Model.Devices != null && Model.HasActiveDevices)
+        {
+            int devices_Temperature = 0;
+            int devices_Humidity = 0;
+            int devices_Radon = 0;
+
+            var tracesTemperature = new StringBuilder();
+            var tracesHumidity = new StringBuilder();
+            var tracesRadon = new StringBuilder();
+
+            foreach (var device in Model.Devices)
+            {
+                if (!device.Active) {
+                    continue;
+                }
+
+                //Check device support
+                var support_Temperature = (device.MeasureBit & (ushort)DTU.MetricLogger.Core.MeasureTypes.MEASURE_TEMPERATURE) != 0;
+                var support_Humidity = (device.MeasureBit & (ushort)DTU.MetricLogger.Core.MeasureTypes.MEASURE_HUMIDITY) != 0;
+                var support_Radon = (device.MeasureBit & (ushort)DTU.MetricLogger.Core.MeasureTypes.MEASURE_RADON) != 0;
+
+                //Plotly trace string
+                var plotly_Trace = $"{{ guid: '{device.Id}', x: [], y: [], type: 'scatter', name: '{device.Room?.Name} ({device.Name})' }}";
+
+                if (support_Temperature)
+                {
+                    tracesTemperature.AppendLine($"metriclogger.data.temperature[{devices_Temperature}] = {plotly_Trace}");
+                    devices_Temperature++;
+                }
+
+                if (support_Humidity)
+                {
+                    tracesHumidity.AppendLine($"metriclogger.data.humidity[{devices_Humidity}] = {plotly_Trace}");
+                    devices_Humidity++;
+                }
+
+                if (support_Radon)
+                {
+                    tracesRadon.AppendLine($"metriclogger.data.radon[{devices_Radon}] = {plotly_Trace}");
+                    devices_Radon++;
+                }
+            }
+
+            <text>
+                <div id="containerTemperature"></div>
+                <div id="containerHumidity"></div>
+                <div id="containerRadon"></div>
+
+                <script type="text/javascript">
+                    $(document).ready(function() {
+
+                        var plotsPerGraph = @Model.PlotsPerGraph;
+
+                        var layoutTemp = { title: 'Temperatur &#8451;', showlegend: true };
+                        var layoutHumid = { title: 'Luftfugtighed (%)', showlegend: true };
+                        var layoutRadon = { title: 'Radon bq/m3', showlegend: true };
+                    
+                        var metriclogger = {
+                            data: {
+                                temperature: [],
+                                humidity: [],
+                                radon: []
+                            }
+                        }
+                        
+                        @Html.Raw(tracesTemperature.ToString())
+                        @Html.Raw(tracesHumidity.ToString())
+                        @Html.Raw(tracesRadon.ToString())
+                        
+                        Plotly.newPlot('containerTemperature', metriclogger.data.temperature, layoutTemp);
+                        Plotly.newPlot('containerHumidity', metriclogger.data.humidity, layoutHumid);
+                        Plotly.newPlot('containerRadon', metriclogger.data.radon, layoutRadon);
+                        
+                        var loadTraces = function() {
+
+                            $.ajax("/Api/Measure").done(function (data) {
+                                if (data.devices.length == 0) return; //No devices in array.
+
+                                //Resolve x
+                                var date = new Date(data.measuredAt);
+                                var hours = (date.getHours() < 10 ? '0' : '') + date.getHours();
+                                var minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+                                var seconds = (date.getSeconds() < 10 ? '0' : '') + date.getSeconds();
+
+                                var x = hours + ":" + minutes + ":" + seconds;
+
+                                //Resolve y 
+                                for (i = 0; i < data.devices.length; i++) {
+                                    var device = data.devices[i];
+                                    
+                                    var hasTemperature = device.temperature !== null;
+                                    var hasHumidity = device.humidity !== null;
+                                    var hasRadon = device.radon !== null;
+                                    
+                                    if (hasTemperature) {
+                                        for (t = 0; t < metriclogger.data.temperature.length; t++) {
+                                            var trace = metriclogger.data.temperature[t];
+                                            
+                                            if (device.customerDeviceId == trace.guid) {
+                                                if (metriclogger.data.temperature[t].x.length == plotsPerGraph) {
+                                                    metriclogger.data.temperature[t].x.shift(); //max plots reached, so shift first element of plot array
+                                                    metriclogger.data.temperature[t].y.shift(); //same goes for y as for x.
+                                                }
+
+                                                metriclogger.data.temperature[t].x.push(x);
+                                                metriclogger.data.temperature[t].y.push(device.temperature);
+                                            }
+                                        }
+
+                                    }
+
+                                    if (hasHumidity) {
+                                        for (t = 0; t < metriclogger.data.humidity.length; t++) {
+                                            var trace = metriclogger.data.humidity[t];
+                                            
+                                            if (device.customerDeviceId == trace.guid) {
+                                                if (metriclogger.data.humidity[t].x.length == plotsPerGraph) {
+                                                    metriclogger.data.humidity[t].x.shift(); //max plots reached, so shift first element of plot array
+                                                    metriclogger.data.humidity[t].y.shift(); //same goes for y as for x.
+                                                }
+
+                                                metriclogger.data.humidity[t].x.push(x);
+                                                metriclogger.data.humidity[t].y.push(device.humidity);
+                                            }
+                                        }
+
+                                    }
+                                    
+                                    if (hasRadon) {
+                                        for (t = 0; t < metriclogger.data.radon.length; t++) {
+                                            var trace = metriclogger.data.radon[t];
+                                            
+                                            if (device.customerDeviceId == trace.guid) {
+                                                if (metriclogger.data.radon[t].x.length == plotsPerGraph) {
+                                                    metriclogger.data.radon[t].x.shift(); //max plots reached, so shift first element of plot array
+                                                    metriclogger.data.radon[t].y.shift(); //same goes for y as for x.
+                                                }
+
+                                                metriclogger.data.radon[t].x.push(x);
+                                                metriclogger.data.radon[t].y.push(device.radon);
+                                            }
+                                        }
+
+                                    }
+                                }
+                            });
+                            
+                            Plotly.redraw('containerTemperature'); 
+                            Plotly.redraw('containerHumidity'); 
+                            Plotly.redraw('containerRadon'); 
+                        }
+
+                        loadTraces();
+
+                        setInterval(loadTraces, 5000);
+
+                    });
+                </script>
+            </text>
+
+            @if (Model.HasActiveDevices_Temperature)
+            {
+                <style type="text/css">#containerTemperature { display: block; }</style>
+            }
+            
+            @if (Model.HasActiveDevices_Humidity)
+            {
+                <style type="text/css">#containerHumidity { display: block; }</style>
+            }
+            
+            @if (Model.HasActiveDevices_Radon)
+            {
+                <style type="text/css">#containerRadon { display: block; }</style>
+            }
+            
+        }
+    } else
+    {
+        <p>
+            Ingen Enheder
+        </p>
+    }
+
+</div>
